@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд пользователя — Avia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Typography & base */
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            background: url('/static/images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #222;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .navbar-custom {
+            background: transparent !important;
+            box-shadow: none
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 700
+        }
+
+        .nav-right {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        /* small auth button in navbar */
+        .auth-btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.10);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: transform .14s, box-shadow .14s, background .14s
+        }
+
+        .auth-btn-sm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+            background: rgba(255, 255, 255, 0.18)
+        }
+
+        /* main content card */
+        .content-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+            color: #111;
+            margin: 0 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06)
+        }
+
+        .content-card h1 {
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 18px
+        }
+
+        .content-card h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 18px
+        }
+
+        /* inputs */
+        .content-card .form-control {
+            background: rgba(255, 255, 255, 0.98);
+            height: 46px;
+            font-size: 1.02rem;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 24, 40, 0.06);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6)
+        }
+
+        .content-card .form-control:focus {
+            box-shadow: 0 8px 30px rgba(11, 94, 215, 0.06);
+            border-color: rgba(11, 94, 215, 0.2)
+        }
+
+        /* Flatpickr input styling */
+        input.flatpickr-input {
+            cursor: pointer
+        }
+
+        .content-card .table thead th {
+            background: transparent
+        }
+
+        .content-card .table td,
+        .content-card .table th {
+            font-size: 1.02rem
+        }
+
+        /* modern buttons */
+        .btn-primary {
+            background: linear-gradient(90deg, #1673e6, #0b5ed7);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-weight: 700;
+            box-shadow: 0 10px 28px rgba(13, 110, 253, 0.12);
+            transition: transform .14s, box-shadow .14s
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(13, 110, 253, 0.16)
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #2db14d, #21903a);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 600
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #e55353, #c82333);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 600
+        }
+
+        @media (min-width:1200px) {
+            .content-card {
+                padding: 56px;
+                margin: 0 120px
+            }
+
+            .content-card h1 {
+                font-size: 56px
+            }
+
+            .content-card h2 {
+                font-size: 30px
+            }
+
+            .content-card .form-control {
+                height: 56px;
+                font-size: 1.12rem
+            }
+
+            .content-card .table td,
+            .content-card .table th {
+                font-size: 1.12rem
+            }
+        }
+
+        @media (max-width:768px) {
+            .content-card {
+                padding: 18px;
+                margin: 12px
+            }
+
+            .content-card h1 {
+                font-size: 28px
+            }
+        }
+
+        /* Empty result card styling */
+        .empty-result-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 34px 28px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            margin-bottom: 18px;
+        }
+
+        .empty-result-card .emoji {
+            font-size: 36px;
+            margin-bottom: 8px
+        }
+
+        .empty-result-card h3 {
+            margin-bottom: 8px;
+            font-weight: 700
+        }
+
+        .empty-result-card p {
+            margin-bottom: 0;
+            color: #6c757d
+        }
+
+        /* Purchase modal styling */
+        .modal-content.purchase {
+            border-radius: 12px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .purchase .modal-header {
+            background: linear-gradient(90deg, #1673e6, #0b5ed7);
+            color: #fff;
+            border-bottom: none;
+            padding: 18px 20px;
+            font-weight: 700;
+        }
+
+        .purchase .modal-body {
+            padding: 20px;
+            background: #fff
+        }
+
+        .purchase .price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #0b5ed7
+        }
+
+        .purchase .qr-wrap {
+            text-align: center;
+            padding: 14px 0
+        }
+
+        .purchase .qr-wrap img {
+            max-width: 220px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12)
+        }
+
+        .purchase .modal-footer {
+            border-top: none;
+            padding: 14px 20px;
+            background: #fff
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Debug overlay (temporary) -->
+    <div id="debugBox"
+        style="position:fixed;left:18px;bottom:18px;z-index:12000;background:rgba(0,0,0,0.7);color:#fff;padding:10px 12px;border-radius:10px;max-width:320px;font-size:13px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.4)">
+        <div id="debugTitle" style="font-weight:700;margin-bottom:6px">Debug</div>
+        <div id="debugContent"></div>
+        <div style="margin-top:8px;text-align:right"><button id="debugClose"
+                style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:4px 8px;border-radius:6px;cursor:pointer">Закрыть</button>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="/">Avia</a>
+            <div class="nav-right">
+                <span id="userInfo" class="text-white">Пользователь</span>
+                <button class="btn btn-outline-danger ms-2 auth-btn-sm" onclick="logout()"><i
+                        class="bi bi-box-arrow-right"></i> Выход</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid my-5">
+        <div class="content-card">
+            <h1>Личный кабинет</h1>
+
+            <!-- Поиск рейсов -->
+            <form id="searchForm" class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="origin" placeholder="Откуда (Moscow)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" id="destination" placeholder="Куда (Paris)">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control flatpickr-input" id="date" placeholder="дд.мм.гггг" readonly>
+                </div>
+                <div class="col-md-2">
+                    <select id="currency" class="form-select" title="Валюта">
+                        <option value="EUR">EUR (€)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="KGS">KGS (сом)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button id="searchBtn" type="submit" class="btn btn-primary">Найти билеты</button>
+                </div>
+            </form>
+
+            <!-- Таблица рейсов -->
+            <h2>Доступные рейсы</h2>
+            <div id="flightsTable" class="table-responsive mb-5"></div>
+
+            <!-- Таблица билетов -->
+            <h2>Мои билеты</h2>
+            <div id="ticketsTable" class="table-responsive"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* Toast notifications helper */
+        function _createToastContainer() {
+            let c = document.getElementById('toastContainer');
+            if (!c) {
+                c = document.createElement('div');
+                c.id = 'toastContainer';
+                c.style.position = 'fixed';
+                c.style.top = '18px';
+                c.style.right = '18px';
+                c.style.zIndex = 11000;
+                c.style.display = 'flex';
+                c.style.flexDirection = 'column';
+                c.style.gap = '10px';
+                document.body.appendChild(c);
+            }
+            return c;
+        }
+
+        function showToast(type, message, timeout = 3500) {
+            const container = _createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = 'app-toast app-toast-' + (type || 'info');
+            toast.style.minWidth = '260px';
+            toast.style.padding = '12px 16px';
+            toast.style.borderRadius = '12px';
+            toast.style.color = '#fff';
+            toast.style.boxShadow = '0 8px 28px rgba(0,0,0,0.24)';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.justifyContent = 'space-between';
+            toast.style.gap = '12px';
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity .25s ease, transform .25s ease';
+
+            const txt = document.createElement('div');
+            txt.style.flex = '1';
+            txt.style.paddingRight = '8px';
+            txt.innerText = message;
+
+            const btn = document.createElement('button');
+            btn.innerText = 'OK';
+            btn.style.background = 'transparent';
+            btn.style.border = '1px solid rgba(255,255,255,0.25)';
+            btn.style.color = 'inherit';
+            btn.style.padding = '6px 10px';
+            btn.style.borderRadius = '8px';
+            btn.style.cursor = 'pointer';
+            btn.onclick = () => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 220); };
+
+            toast.appendChild(txt);
+            toast.appendChild(btn);
+
+            // type styling
+            if (type === 'success') toast.style.background = 'linear-gradient(90deg,#28a745,#198754)';
+            else if (type === 'error') toast.style.background = 'linear-gradient(90deg,#d9534f,#c82333)';
+            else if (type === 'warn') toast.style.background = 'linear-gradient(90deg,#ffb74d,#ff9800)';
+            else toast.style.background = 'linear-gradient(90deg,#5bc0de,#31a9d8)';
+
+            container.appendChild(toast);
+            // show
+            requestAnimationFrame(() => { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; });
+
+            const to = setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 220); }, timeout);
+            // return a handle to allow manual clear
+            return { element: toast, clear: () => { clearTimeout(to); toast.remove(); } };
+        }
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        if (!token || role !== 'user') {
+            showToast('error', 'Доступ только для пользователей!');
+            setTimeout(() => window.location.href = '/login', 1200);
+        } else {
+            document.getElementById('userInfo').textContent = `Пользователь (${role})`;
+        }
+
+        // Загрузка рейсов
+        async function loadFlights(origin = '', destination = '', date = '') {
+            let url = 'http://127.0.0.1:5000/user/flights?';
+            if (origin) url += `origin=${origin}&`;
+            if (destination) url += `destination=${destination}&`;
+            if (date) url += `date=${date}`;
+            console.log('Поиск с URL:', url);  // отладка
+
+            // UI: show loading on search button
+            const searchBtn = document.getElementById('searchBtn');
+            const prevTxt = searchBtn.innerHTML;
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = 'Идёт поиск...';
+
+            // debug overlay: show request info
+            try {
+                document.getElementById('debugBox').style.display = 'block';
+                document.getElementById('debugContent').textContent = `Запрос: ${url}`;
+            } catch (e) { console.warn('debug overlay error', e); }
+
+            const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            console.log('Ответ сервера:', response.status, response.statusText);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.log('Ошибка:', errorData);
+                showToast('error', 'Ошибка: ' + (errorData.error || 'server'));
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = prevTxt;
+                return;
+            }
+            const flights = await response.json();
+            console.log('Рейсы:', flights);  // отладка
+
+            if (!flights || flights.length === 0) {
+                document.getElementById('flightsTable').innerHTML = `
+                    <div class="empty-result-card text-center">
+                        <div class="emoji">🤔</div>
+                        <h3>Ничего не нашлось</h3>
+                        <p>Возможно, в названии направления ошибка или что-то не так с датами: например, они слишком далеко друг от друга</p>
+                    </div>
+                `;
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = prevTxt;
+                return;
+            }
+
+            document.getElementById('flightsTable').innerHTML = `
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (€)</th><th>Места</th><th>Действия</th></tr></thead>
+                    <tbody>${flights.map(f => `
+                        <tr>
+                            <td>${f.id}</td>
+                            <td>${f.origin}</td>
+                            <td>${f.destination}</td>
+                            <td>${f.date}</td>
+                            <td>${f.price}</td>
+                            <td>${f.seats}</td>
+                            <td><button class="btn btn-success btn-sm" onclick="buyTicket(${f.id})">Купить</button></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            `;
+            // restore search button state
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = prevTxt;
+        }
+
+        // Загрузка билетов
+        async function loadTickets() {
+            const response = await fetch('http://127.0.0.1:5000/user/tickets', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log('Ошибка билетов:', errorData);
+                return;
+            }
+            const tickets = await response.json();
+
+            document.getElementById('ticketsTable').innerHTML = `
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Рейс ID</th><th>Статус</th><th>Действия</th></tr></thead>
+                    <tbody>${tickets.map(t => `
+                        <tr>
+                            <td>${t.id}</td>
+                            <td>${t.flight}</td>
+                            <td>${t.status}</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="cancelTicket(${t.id})">Отменить</button></td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="4">Билетов нет</td></tr>'}</tbody>
+                </table>
+            `;
+        }
+
+        // Покупка
+        async function buyTicket(flightId) {
+            // open purchase modal and pass flightId
+            openPurchaseModal(flightId);
+        }
+
+        // Отмена
+        async function cancelTicket(ticketId) {
+            const response = await fetch(`http://127.0.0.1:5000/user/tickets/${ticketId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            console.log('Отмена:', data);
+            showToast(response.ok ? 'success' : 'error', data.message || data.error || '');
+            loadTickets();  // обновить
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        // Поиск
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const date = document.getElementById('date').value;
+            loadFlights(origin, destination, date);
+        });
+
+        // debug close
+        document.getElementById('debugClose').addEventListener('click', () => { document.getElementById('debugBox').style.display = 'none'; });
+
+        // Загрузка при старте
+        // Если были параметры поиска с главной страницы — читаем их и выполняем поиск
+        try {
+            const saved = sessionStorage.getItem('searchParams');
+            if (saved) {
+                const p = JSON.parse(saved);
+                // populate local controls for UX
+                if (p.origin) document.getElementById('origin').value = p.origin;
+                if (p.destination) document.getElementById('destination').value = p.destination;
+                if (p.dateFrom) {
+                    window.dateFromValue = p.dateFrom;
+                    document.getElementById('date').value = p.dateFrom; // if you use single-date input elsewhere
+                }
+                // call loadFlights with saved params
+                loadFlights(p.origin || '', p.destination || '', p.dateFrom || '');
+                // clear params to avoid repeated searches
+                sessionStorage.removeItem('searchParams');
+            } else {
+                loadFlights();
+            }
+        } catch (e) {
+            console.warn('searchParams parse error', e);
+            loadFlights();
+        }
+        loadTickets();
+    </script>
+    <!-- Purchase modal -->
+    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content purchase">
+                <div class="modal-header">
+                    <h5 class="modal-title">Оплата билета</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="purchaseBody">
+                        <p>Рейс <span id="pFlightInfo"></span></p>
+                        <p>Цена: <strong id="pPrice">0</strong> EUR</p>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Количество мест</label>
+                                <input id="pQuantity" type="number" class="form-control" min="1" step="1" value="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Сумма к оплате (в выбранной валюте)</label>
+                                <input id="pAmount" type="number" class="form-control" min="0" step="0.01">
+                                <div id="pAmountError" class="text-danger small mt-2 d-none">Сумма недостаточна</div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Цена за место: <span id="pPrice">0</span> EUR — Всего: <strong
+                                    id="pTotal">0</strong></small>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Способ оплаты</label>
+                            <select id="pMethod" class="form-select">
+                                <option value="card">Карта</option>
+                                <option value="qr">QR</option>
+                            </select>
+                        </div>
+                        <div id="pPaymentInstructions" class="small text-muted">Инструкции появятся здесь.</div>
+                        <div class="text-center mt-3">
+                            <img id="pQrImage" src="/static/images/Qr.jpg" class="img-fluid d-none" alt="QR для оплаты"
+                                style="max-width:240px;border-radius:8px;border:1px solid #eee" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="pPayBtn" class="btn btn-primary">Оплатить</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // currency conversion helper (static rates for demo)
+        const conversion = { EUR: 1, USD: 1.08, KGS: 95 }; // 1 EUR = 1.08 USD, 95 KGS (пример)
+        let currentPurchaseFlight = null;
+
+        function formatCurrency(value, cur) {
+            if (cur === 'EUR') return `${value.toFixed(2)} €`;
+            if (cur === 'USD') return `$${value.toFixed(2)}`;
+            if (cur === 'KGS') return `${Math.round(value)} сом`;
+            return value;
+        }
+
+        async function openPurchaseModal(flightId) {
+            // fetch flight details (or reuse existing list) — we'll request the single flight from server
+            const resp = await fetch(`http://127.0.0.1:5000/user/flights?flight_id=${flightId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!resp.ok) { showToast('error', 'Не удалось загрузить рейс'); return; }
+            const flights = await resp.json();
+            const flight = flights[0] || flights;
+            currentPurchaseFlight = flight;
+
+            const cur = document.getElementById('currency').value || 'EUR';
+            const priceEUR = parseFloat(flight.price || 0);
+            const converted = priceEUR * (conversion[cur] || 1);
+
+            document.getElementById('pFlightInfo').textContent = `${flight.origin} → ${flight.destination} (${flight.date})`;
+            document.getElementById('pPrice').textContent = formatCurrency(priceEUR, 'EUR');
+            document.getElementById('pAmount').value = converted.toFixed(2);
+            document.getElementById('pTotal').textContent = formatCurrency(converted, cur);
+            document.getElementById('pPaymentInstructions').textContent = `Вы оплачиваете ${formatCurrency(converted, cur)} при помощи выбранного способа.`;
+            document.getElementById('pAmountError').classList.add('d-none');
+            document.getElementById('pAmount').classList.remove('is-invalid');
+
+            // quantity handling
+            const qtyEl = document.getElementById('pQuantity');
+            function updateTotals() {
+                let qty = parseInt(qtyEl.value || 1);
+                if (qty < 1) qty = 1;
+                // update total in selected currency
+                const total = converted * qty;
+                document.getElementById('pTotal').textContent = formatCurrency(total, cur);
+                // set pAmount as the total by default
+                document.getElementById('pAmount').value = total.toFixed(2);
+                document.getElementById('pAmountError').classList.add('d-none');
+                document.getElementById('pAmount').classList.remove('is-invalid');
+            }
+            qtyEl.removeEventListener && qtyEl.removeEventListener('input', updateTotals);
+            qtyEl.addEventListener('input', updateTotals);
+            // if user changes amount manually, adjust total display for single/multiple seats
+            const amountEl = document.getElementById('pAmount');
+            amountEl.removeEventListener && amountEl.removeEventListener('input', updateTotals);
+            amountEl.addEventListener('input', () => {
+                const v = parseFloat(amountEl.value || 0);
+                const qty = parseInt(qtyEl.value || 1);
+                document.getElementById('pTotal').textContent = formatCurrency(v, cur);
+            });
+
+            const qrImg = document.getElementById('pQrImage');
+            const methodEl = document.getElementById('pMethod');
+            function updateMethodUI() {
+                const method = methodEl.value;
+                if (method === 'qr') {
+                    qrImg.classList.remove('d-none');
+                    document.getElementById('pPaymentInstructions').textContent = `Отсканируйте QR код и переведите сумму ${formatCurrency(converted, cur)}.`;
+                } else {
+                    qrImg.classList.add('d-none');
+                    document.getElementById('pPaymentInstructions').textContent = `Введите данные карты в следующем шаге и оплатите ${formatCurrency(converted, cur)}.`;
+                }
+            }
+            methodEl.removeEventListener && methodEl.removeEventListener('change', updateMethodUI);
+            methodEl.addEventListener('change', updateMethodUI);
+            updateMethodUI();
+
+            const modal = new bootstrap.Modal(document.getElementById('purchaseModal'));
+            modal.show();
+
+            document.getElementById('pPayBtn').onclick = async () => {
+                const qty = parseInt(document.getElementById('pQuantity').value || 1);
+                const entered = parseFloat(document.getElementById('pAmount').value || 0);
+                // convert entered back to EUR for comparison
+                const rate = conversion[cur] || 1;
+                const enteredEUR = entered / rate;
+                const totalPriceEUR = priceEUR * qty;
+                if (enteredEUR + 1e-6 < totalPriceEUR) {
+                    document.getElementById('pAmountError').classList.remove('d-none');
+                    document.getElementById('pAmount').classList.add('is-invalid');
+                    return;
+                }
+
+                // simulate payment & create tickets (quantity-aware)
+                const response = await fetch('http://127.0.0.1:5000/user/tickets', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ flight_id: flightId, paid_amount_eur: totalPriceEUR, quantity: qty })
+                });
+                const data = await response.json();
+                showToast(response.ok ? 'success' : 'error', data.message || data.error || '');
+                modal.hide();
+                loadTickets();
+            };
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Инициализация flatpickr (если скрипт загружен)
+        if (window.flatpickr) {
+            flatpickr("#date", {
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d.m.Y",
+                allowInput: false
+            });
+        }
+    </script>
+</body>
+
+</html>

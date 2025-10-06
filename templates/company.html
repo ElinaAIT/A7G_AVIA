@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабинет компании — Avia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+            background: url('/static/images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #222
+        }
+
+        .navbar-custom {
+            background: transparent !important;
+            box-shadow: none
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: 700
+        }
+
+        .nav-right {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .auth-btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.10);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: transform .14s
+        }
+
+        .auth-btn-sm:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.18)
+        }
+
+        .content-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 14px;
+            padding: 28px;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.16);
+            margin: 0 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06)
+        }
+
+        h1,
+        h2 {
+            color: #0b5ed7
+        }
+
+        .card {
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+            border: none
+        }
+
+        .content-card .form-control {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 10px;
+            height: 46px
+        }
+
+        .content-card .table thead th {
+            background: linear-gradient(90deg, #1673e6, #0b5ed7);
+            color: #fff
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #1673e6, #0b5ed7);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px
+        }
+
+        .btn-secondary {
+            border-radius: 8px
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #2db14d, #21903a);
+            border: none;
+            border-radius: 8px
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #e55353, #c82333);
+            border: none;
+            border-radius: 8px
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 11000
+        }
+
+        @media (max-width:768px) {
+            .content-card {
+                margin: 12px;
+                padding: 18px
+            }
+        }
+
+        /* Charts and stats styling */
+        .chart-card {
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.92));
+            box-shadow: 0 8px 30px rgba(11, 94, 215, 0.08);
+            height: 100%;
+            padding: 12px;
+            border: 1px solid rgba(11, 94, 215, 0.06);
+        }
+
+        #statsSummary {
+            border-radius: 10px;
+            background: linear-gradient(90deg, rgba(11, 94, 215, 0.06), rgba(11, 94, 215, 0.03));
+            color: #0b5ed7;
+            padding: 16px;
+            min-height: 220px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #222
+        }
+
+        .stat-label {
+            color: #6c757d
+        }
+
+        @media (max-width:768px) {
+            #statsSummary {
+                min-height: auto;
+                margin-bottom: 12px
+            }
+
+            .chart-card {
+                height: 220px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-plane me-2"></i>Avia</a>
+            <div class="nav-right">
+                <span id="userInfo" class="text-white">Менеджер</span>
+                <button class="btn btn-outline-danger ms-2 auth-btn-sm" onclick="logout()">Выход <i
+                        class="fas fa-sign-out-alt ms-1"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="content-card">
+            <h1><i class="fas fa-building me-2"></i>Кабинет авиакомпании</h1>
+
+            <!-- Добавление рейса -->
+            <h2><i class="fas fa-plus-circle me-2"></i>Добавить рейс</h2>
+            <div class="card mb-5">
+                <div class="card-body">
+                    <form id="addFlightForm" class="row g-3">
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" id="origin" placeholder="Откуда" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" id="destination" placeholder="Куда" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control flatpickr-input" id="date" placeholder="дд.мм.гггг"
+                                required readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" id="price" placeholder="Цена" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" id="seats" placeholder="Места" required>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary"><i
+                                    class="fas fa-plus me-2"></i>Добавить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Список рейсов -->
+            <h2><i class="fas fa-plane-departure me-2"></i>Рейсы компании</h2>
+            <div id="flightsTable" class="table-responsive mb-5">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Откуда</th>
+                                    <th>Куда</th>
+                                    <th>Дата</th>
+                                    <th>Цена</th>
+                                    <th>Места</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Статистика -->
+            <h2><i class="fas fa-chart-bar me-2"></i>Статистика</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select id="period" class="form-select">
+                                <option value="all">Все время</option>
+                                <option value="today">Сегодня</option>
+                                <option value="week">Неделя</option>
+                                <option value="month">Месяц</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary" onclick="loadStats()"><i
+                                    class="fas fa-sync-alt me-2"></i>Обновить</button>
+                        </div>
+                    </div>
+                    <div id="stats" class="row">
+                        <div class="col-md-5">
+                            <div id="statsSummary" class="alert alert-info">
+                                <i class="fas fa-plane-departure me-2"></i>Загрузка статистики...
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="card" style="height:260px">
+                                        <div class="card-body p-2">
+                                            <canvas id="chartFlights" style="width:100%;height:220px"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card" style="height:260px">
+                                        <div class="card-body p-2">
+                                            <canvas id="chartMetrics" style="width:100%;height:220px"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast контейнер для уведомлений -->
+        <div class="toast-container">
+            <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert"
+                aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-check-circle me-2"></i><span id="toastMessage"></span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            if (window.flatpickr) {
+                flatpickr('#date', { altInput: true, altFormat: 'd.m.Y', dateFormat: 'Y-m-d', allowInput: false });
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+            if (!token || role !== 'manager') {
+                alert('Доступ только для менеджеров!');
+                window.location.href = '/login';
+            } else {
+                document.getElementById('userInfo').textContent = `Менеджер (${role})`;
+            }
+
+            // Функция для показа toast-уведомления
+            function showToast(message, type = 'success') {
+                const toast = new bootstrap.Toast(document.getElementById('toast'));
+                document.getElementById('toastMessage').innerHTML = message;
+                document.getElementById('toast').className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+                toast.show();
+            }
+
+            // Добавление рейса
+            document.getElementById('addFlightForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const origin = document.getElementById('origin').value;
+                const destination = document.getElementById('destination').value;
+                const date = document.getElementById('date').value;
+                const price = parseFloat(document.getElementById('price').value);
+                const seats = parseInt(document.getElementById('seats').value);
+
+                const response = await fetch('http://127.0.0.1:5000/company/flights', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ origin, destination, date, price, seats })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showToast(data.message);
+                    loadFlights();
+                    loadStats();
+                } else {
+                    showToast(data.error || 'Неизвестная ошибка', 'danger');
+                }
+                e.target.reset();
+            });
+
+            // Загрузка рейсов
+            async function loadFlights() {
+                const response = await fetch('http://127.0.0.1:5000/company/flights', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) {
+                    console.log('Ошибка загрузки рейсов:', await response.json());
+                    return;
+                }
+                const flights = await response.json();
+
+                document.getElementById('flightsTable').innerHTML = `
+                <table class="table table-striped">
+                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена</th><th>Места</th></tr></thead>
+                    <tbody>${flights.map(f => `<tr><td>${f.id}</td><td>${f.origin}</td><td>${f.destination}</td><td>${f.date}</td><td>${f.price}</td><td>${f.seats}</td></tr>`).join('') || '<tr><td colspan="6">Рейсов нет</td></tr>'}</tbody>
+                </table>
+            `;
+            }
+
+            // Charts
+            let chartFlights = null;
+            let chartMetrics = null;
+
+            // helpers
+            const fmtNumber = (n) => new Intl.NumberFormat('ru-RU').format(n || 0);
+            const fmtCurrency = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n || 0).replace('€', '€');
+
+            function createOrUpdateCharts(stats) {
+                const other = Math.max(0, stats.total_flights - (stats.upcoming || 0) - (stats.completed || 0));
+
+                // Flights breakdown doughnut
+                const flightsData = [stats.upcoming || 0, stats.completed || 0, other];
+                if (!chartFlights) {
+                    const ctx = document.getElementById('chartFlights').getContext('2d');
+                    chartFlights = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Предстоящие', 'Завершённые', 'Прочие'],
+                            datasets: [{
+                                data: flightsData,
+                                backgroundColor: ['#0b5ed7', '#2db14d', '#6c757d'],
+                                hoverOffset: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
+                                tooltip: { callbacks: { label: ctx => `${ctx.label}: ${fmtNumber(ctx.parsed)}` } }
+                            }
+                        }
+                    });
+                } else {
+                    chartFlights.data.datasets[0].data = flightsData;
+                    chartFlights.update();
+                }
+
+                // Metrics bar (Passengers vs Revenue)
+                const metricsData = [stats.total_passengers || 0, stats.total_revenue || 0];
+                if (!chartMetrics) {
+                    const ctx2 = document.getElementById('chartMetrics').getContext('2d');
+                    chartMetrics = new Chart(ctx2, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Пассажиров', 'Выручка'],
+                            datasets: [{
+                                label: 'Значение',
+                                data: metricsData,
+                                backgroundColor: ['#17a2b8', '#ffc107']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: { callbacks: { label: (ctx) => ctx.dataset.label ? `${ctx.dataset.label}: ${ctx.label === 'Выручка' ? fmtCurrency(ctx.parsed.y) : fmtNumber(ctx.parsed.y)}` : '' } }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { callback: (v) => fmtNumber(v) } }
+                            }
+                        }
+                    });
+                } else {
+                    chartMetrics.data.datasets[0].data = metricsData;
+                    chartMetrics.update();
+                }
+            }
+
+            // Статистика
+            async function loadStats() {
+                const period = document.getElementById('period').value;
+                const response = await fetch(`http://127.0.0.1:5000/company/stats?period=${period}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) {
+                    console.log('Ошибка статистики:', await response.json());
+                    showToast('Ошибка загрузки статистики', 'danger');
+                    return;
+                }
+                const stats = await response.json();
+
+                document.getElementById('statsSummary').innerHTML = `
+                    <h5 class="mb-2"><i class="fas fa-chart-bar me-2"></i>Период: <span class="stat-value">${stats.period}</span></h5>
+                    <div class="mb-2"><div class="stat-label">Всего рейсов</div><div class="stat-value">${fmtNumber(stats.total_flights)}</div></div>
+                    <div class="mb-2"><div class="stat-label">Предстоящих</div><div class="stat-value">${fmtNumber(stats.upcoming)}</div></div>
+                    <div class="mb-2"><div class="stat-label">Завершённых</div><div class="stat-value">${fmtNumber(stats.completed)}</div></div>
+                    <div class="mb-2"><div class="stat-label">Пассажиров</div><div class="stat-value">${fmtNumber(stats.total_passengers)}</div></div>
+                    <div class="mb-0"><div class="stat-label">Выручка</div><div class="stat-value">${fmtCurrency(stats.total_revenue)}</div></div>
+                `;
+
+                createOrUpdateCharts(stats);
+            }
+
+            // Logout
+            function logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('role');
+                window.location.href = '/';
+            }
+
+            // Загрузка при старте
+            loadFlights();
+            loadStats();
+        </script>
+</body>
+
+</html>

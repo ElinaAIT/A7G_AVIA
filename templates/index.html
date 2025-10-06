@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avia — Билеты на самолёт</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            background: url("/static/images/background.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .search-bar-wide {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            /* Сделать фон прозрачным и слегка размытым, чтобы картинка просвечивала */
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 24px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
+            padding: 24px 32px;
+            margin: 48px auto 32px auto;
+            max-width: 1200px;
+        }
+
+        /* Empty result card styling (ensure high contrast on hero background) */
+        #indexResults {
+            margin-top: 18px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .empty-result-card {
+            background: rgba(255, 255, 255, 0.96);
+            color: #111;
+            border-radius: 14px;
+            padding: 34px 28px;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.25);
+            margin: 10px auto 0 auto;
+            max-width: 1100px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            backdrop-filter: none;
+        }
+
+        .empty-result-card .emoji {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .empty-result-card h3 {
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: #0b5ed7;
+            font-size: 1.6rem;
+        }
+
+        .empty-result-card p {
+            margin-bottom: 0;
+            color: #4f5660;
+            font-size: 1rem;
+        }
+
+        .search-bar-wide .form-control {
+            font-size: 1.2rem;
+            padding: 16px 18px;
+            border-radius: 14px;
+            /* полупрозрачная рамка и фон, чтобы сохранить читаемость */
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.12);
+            min-width: 160px;
+            outline: none;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .search-bar-wide .form-control:focus {
+            border-color: rgba(13, 110, 253, 0.9);
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .search-bar-wide .swap-btn {
+            background: #f3f6fa;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #0d6efd;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .search-bar-wide .search-btn {
+            background: #ff7a1a;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.2rem;
+            padding: 0 38px;
+            height: 52px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        @media (max-width: 900px) {
+            .search-bar-wide {
+                flex-direction: column;
+                gap: 16px;
+                padding: 18px 8px;
+            }
+
+            .search-bar-wide .search-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+
+        .carousel-inner .carousel-item img {
+            height: 350px;
+            max-width: 100%;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 18px;
+            background: #eee;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .carousel-caption {
+            background: rgba(255, 255, 255, 0.55);
+            /* белый, прозрачный */
+            border-radius: 16px;
+            padding: 18px 24px;
+            color: #222;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            /* backdrop-filter: blur(2px); // если нужен эффект размытия */
+        }
+
+        .carousel-caption h5,
+        .carousel-caption p {
+            color: #222;
+            margin: 0;
+        }
+
+        /* Навбар: прозрачный и кнопки вход/рег */
+        .navbar-custom {
+            background: transparent !important;
+            box-shadow: none;
+        }
+
+        .nav-auth {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-auth .auth-btn-sm {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .nav-auth .auth-btn-sm i {
+            font-size: 1rem
+        }
+
+        .nav-auth .auth-btn-sm:hover {
+            background: rgba(255, 255, 255, 0.18);
+            text-decoration: none
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+        <div class="container">
+            <a class="navbar-brand text-white" href="/">Avia</a>
+            <div class="nav-auth">
+                <a href="/login" class="auth-btn-sm text-white"><i class="bi bi-box-arrow-in-right"></i> Войти</a>
+                <a href="/register" class="auth-btn-sm text-white"><i class="bi bi-person-plus"></i> Регистрация</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Слайдер баннеров с рекламой или акциями -->
+    <div class="container mt-4">
+        <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Слайд 1"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1"
+                    aria-label="Слайд 2"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="2"
+                    aria-label="Слайд 3"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="3"
+                    aria-label="Слайд 4"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="4"
+                    aria-label="Слайд 5"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="5"
+                    aria-label="Слайд 6"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="6"
+                    aria-label="Слайд 7"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="/static/images/paris.jpg" alt="Париж">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Париж: Эйфелева башня зовёт!</h5>
+                        <p>Скидка 20% на рейсы в город любви</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/dubai.jpg" alt="Дубай">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Дубай: Бурдж-Халифа и роскошь</h5>
+                        <p>Лети в город будущего по выгодной цене</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/maldive.jpg" alt="Мальдивы">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Мальдивы: райские пляжи</h5>
+                        <p>Отдых на бирюзовом океане с Avia</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/issykkul.jpg" alt="Иссык-Куль">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Иссык-Куль:сокровище Кыргызстана</h5>
+                        <p>Озеро, горы и кыргызская гостеприимность</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/japan.jpg" alt="Япония">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Япония: Токио и сакура</h5>
+                        <p>Культура и технологии в одном рейсе</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/korea.jpg" alt="Корея">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Южная Корея: Сеул и K-pop</h5>
+                        <p>Современность и традиции ждут тебя</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="/static/images/mekkah.jpg" alt="Мекка">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Мекка: духовное путешествие</h5>
+                        <p>Рейсы в священные места по специальным ценам</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Предыдущий</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Следующий</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Форма поиска (по ТЗ) -->
+    <div class="container my-5" style="max-width:100%;padding:0;">
+        <h1 class="text-center mb-4">Найти рейсы</h1>
+        <form id="searchForm">
+            <div class="search-bar-wide">
+                <input type="text" class="form-control" id="origin" placeholder="Откуда" value="Бишкек">
+                <button type="button" class="swap-btn" id="swapBtn" title="Поменять местами">&#8646;</button>
+                <input type="text" class="form-control" id="destination" placeholder="Куда" value="Анталия">
+                <input type="text" class="form-control" id="dateFrom" placeholder="Туда" readonly>
+                <input type="text" class="form-control" id="dateTo" placeholder="Обратно" readonly>
+                <div style="position:relative;min-width:200px;">
+                    <button type="button" id="passengerBtn" class="form-control"
+                        style="text-align:left;display:flex;justify-content:space-between;align-items:center;">
+                        <span id="passengerSummary">1 пассажир<br><span
+                                style="font-size:0.9em;color:#bfc7d1;">Эконом</span></span>
+                        <span style="font-size:1.2em;">&#9662;</span>
+                    </button>
+                    <div id="passengerDropdown"
+                        style="display:none;position:absolute;top:110%;left:0;width:320px;z-index:10;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.10);padding:18px;">
+                        <div style="font-weight:600;margin-bottom:10px;">Количество пассажиров</div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <div>
+                                Взрослые<br><span style="font-size:0.9em;color:#bfc7d1;">12 лет и старше</span>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-light btn-sm" id="adultMinus">-</button>
+                                <span id="adultCount" style="margin:0 10px;">1</span>
+                                <button type="button" class="btn btn-light btn-sm" id="adultPlus">+</button>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <div>
+                                Дети<br><span style="font-size:0.9em;color:#bfc7d1;">от 2 до 11 лет</span>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-light btn-sm" id="childMinus">-</button>
+                                <span id="childCount" style="margin:0 10px;">0</span>
+                                <button type="button" class="btn btn-light btn-sm" id="childPlus">+</button>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                            <div>
+                                Младенцы<br><span style="font-size:0.9em;color:#bfc7d1;">Младше 2 лет, без места</span>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-light btn-sm" id="infantMinus">-</button>
+                                <span id="infantCount" style="margin:0 10px;">0</span>
+                                <button type="button" class="btn btn-light btn-sm" id="infantPlus">+</button>
+                            </div>
+                        </div>
+                        <div style="font-weight:600;margin-bottom:10px;">Класс обслуживания</div>
+                        <div>
+                            <label style="display:block;"><input type="radio" name="class" value="Эконом" checked>
+                                Эконом
+                            </label>
+                            <label style="display:block;"><input type="radio" name="class" value="Комфорт"> Комфорт
+                            </label>
+                            <label style="display:block;"><input type="radio" name="class" value="Бизнес"> Бизнес
+                            </label>
+                            <label style="display:block;"><input type="radio" name="class" value="Первый класс"> Первый
+                                класс</label>
+                        </div>
+                        <button type="button" id="passengerDropdownClose"
+                            style="width:100%;background:#0057d9;color:#fff;border:none;border-radius:12px;font-size:1.15rem;font-weight:600;padding:14px;margin-top:12px;">
+                            Применить
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="search-btn" id="searchBtn">Найти билеты</button>
+            </div>
+        </form>
+        <div id="indexResults" style="max-width:1200px;margin:8px auto 0"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // flatpickr для "Туда/Обратно"
+        flatpickr("#dateFrom", {
+            locale: "ru",
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            allowInput: false,
+            onOpen: function (selectedDates, dateStr, instance) {
+                instance.setDate([window.dateFromValue || '', window.dateToValue || '']);
+            },
+            onChange: function (selectedDates, dateStr, instance) {
+                if (selectedDates.length > 0) {
+                    window.dateFromValue = flatpickr.formatDate(selectedDates[0], "Y-m-d");
+                    document.getElementById('dateFrom').value = selectedDates[0].toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        weekday: 'short'
+                    });
+                }
+                if (selectedDates.length > 1) {
+                    window.dateToValue = flatpickr.formatDate(selectedDates[1], "Y-m-d");
+                    document.getElementById('dateTo').value = selectedDates[1].toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        weekday: 'short'
+                    });
+                } else {
+                    window.dateToValue = '';
+                    document.getElementById('dateTo').value = '';
+                }
+            },
+            mode: "range",
+            showMonths: 1
+        });
+
+        // Открытие календаря по клику на "Обратно"
+        document.getElementById('dateTo').onclick = function () {
+            document.getElementById('dateFrom')._flatpickr.open();
+        };
+
+        // Пассажиры dropdown
+        const passengerBtn = document.getElementById('passengerBtn');
+        const passengerDropdown = document.getElementById('passengerDropdown');
+        passengerBtn.onclick = function () {
+            passengerDropdown.style.display = passengerDropdown.style.display === "none" ? "block" : "none";
+        };
+        document.getElementById('passengerDropdownClose').onclick = function () {
+            passengerDropdown.style.display = "none";
+        };
+
+        // Логика для счётчиков пассажиров и сводки
+        let adultCount = 1;
+        let childCount = 0;
+        let infantCount = 0;
+        let selectedClass = "Эконом";
+
+        function updatePassengerSummary() {
+            const total = adultCount + childCount + infantCount;
+            document.getElementById('passengerSummary').innerHTML = `${total} пассажир${total === 1 ? '' : 'а'}<br><span style="font-size:0.9em;color:#bfc7d1;">${selectedClass}</span>`;
+        }
+
+        document.getElementById('adultPlus').onclick = function () {
+            adultCount++;
+            updatePassengerSummary();
+        };
+        document.getElementById('adultMinus').onclick = function () {
+            if (adultCount > 1) {
+                adultCount--;
+                updatePassengerSummary();
+            }
+        };
+        document.getElementById('childPlus').onclick = function () {
+            childCount++;
+            updatePassengerSummary();
+        };
+        document.getElementById('childMinus').onclick = function () {
+            if (childCount > 0) {
+                childCount--;
+                updatePassengerSummary();
+            }
+        };
+        document.getElementById('infantPlus').onclick = function () {
+            infantCount++;
+            updatePassengerSummary();
+        };
+        document.getElementById('infantMinus').onclick = function () {
+            if (infantCount > 0) {
+                infantCount--;
+                updatePassengerSummary();
+            }
+        };
+        const classRadios = document.getElementsByName('class');
+        for (const radio of classRadios) {
+            radio.onclick = function () {
+                selectedClass = this.value;
+                updatePassengerSummary();
+            };
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+            const dateFrom = window.dateFromValue || '';
+            const dateTo = window.dateToValue || '';
+            const passengers = adultCount + childCount + infantCount;
+            const adults = adultCount;
+            const children = childCount;
+            const infants = infantCount;
+            const travelClass = selectedClass;
+
+            // perform public search in-place and render results under the search bar
+            const resultsEl = document.getElementById('indexResults');
+            resultsEl.innerHTML = '<div style="padding:18px;background:rgba(255,255,255,0.9);border-radius:12px">Идёт поиск...</div>';
+            try {
+                const q = `http://127.0.0.1:5000/user/public/flights?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&date=${encodeURIComponent(dateFrom)}`;
+                const resp = await fetch(q);
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    resultsEl.innerHTML = `<div class="empty-result-card text-center"><div class="emoji">⚠️</div><h3>Ошибка</h3><p>${err.error || 'Сервер вернул ошибку'}</p></div>`;
+                    return;
+                }
+                const flights = await resp.json();
+                if (!flights || flights.length === 0) {
+                    resultsEl.innerHTML = `
+                        <div style="display:flex;justify-content:center;">
+                            <div class="empty-result-card text-center" style="width:100%;max-width:900px;">
+                                <div class="emoji">🤔</div>
+                                <h3>Ничего не нашлось</h3>
+                                <p>Возможно, в названии направления ошибка или что-то не так с датами: например, они слишком далеко друг от друга</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                // render table of flights
+                resultsEl.innerHTML = `
+                    <table class="table table-striped">
+                        <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (€)</th><th>Места</th></tr></thead>
+                        <tbody>${flights.map(f => `
+                            <tr>
+                                <td>${f.id}</td>
+                                <td>${f.origin}</td>
+                                <td>${f.destination}</td>
+                                <td>${f.date}</td>
+                                <td>${f.price}</td>
+                                <td>${f.seats}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>
+                `;
+            } catch (err) {
+                resultsEl.innerHTML = `<div class="empty-result-card text-center"><div class="emoji">⚠️</div><h3>Ошибка</h3><p>${err.message}</p></div>`;
+            }
+        });
+
+        // Закрытие дропдауна при клике вне его области
+        window.onclick = function (event) {
+            if (!event.target.matches('#passengerBtn')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>

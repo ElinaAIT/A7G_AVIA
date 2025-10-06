@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация — Avia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: url("/static/images/background.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* Центрирование и стиль карточки регистрации */
+        .auth-container {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .auth-card .card {
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            color: #222;
+        }
+
+        .auth-btn {
+            background: linear-gradient(180deg, #1e7be3, #0b5ed7);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(11, 94, 215, 0.28);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-btn i {
+            font-size: 1.1rem;
+        }
+
+        .auth-btn:active,
+        .auth-btn:focus {
+            box-shadow: 0 4px 12px rgba(11, 94, 215, 0.32);
+            outline: none;
+        }
+
+        @media (max-width: 576px) {
+            .auth-card {
+                padding: 0 12px;
+            }
+        }
+
+        /* Ролевые карточки */
+        .role-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .role-options input[type="radio"] {
+            display: none;
+        }
+
+        .role-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all .18s;
+            color: #fff
+        }
+
+        .role-card .role-icon {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            display: block
+        }
+
+        .role-card .role-title {
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+
+        .role-card .role-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8)
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        /* checked state */
+        input[type="radio"]:checked+label.role-card {
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center auth-container">
+            <div class="col-md-6">
+                <div class="auth-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="text-center">Регистрация</h2>
+                            <form id="registerForm">
+                                <div class="mb-3">
+                                    <label>Логин</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Пароль</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Роль</label>
+                                    <div class="role-options">
+                                        <input type="radio" name="role" id="role-user" value="user" checked>
+                                        <label for="role-user" class="role-card">
+                                            <i class="bi bi-person-fill role-icon"></i>
+                                            <div class="role-title">Пользователь</div>
+                                            <div class="role-desc">Покупка билетов</div>
+                                        </label>
+
+                                        <input type="radio" name="role" id="role-manager" value="manager">
+                                        <label for="role-manager" class="role-card">
+                                            <i class="bi bi-buildings role-icon"></i>
+                                            <div class="role-title">Менеджер</div>
+                                            <div class="role-desc">Управление компанией</div>
+                                        </label>
+
+                                        <input type="radio" name="role" id="role-admin" value="admin">
+                                        <label for="role-admin" class="role-card">
+                                            <i class="bi bi-shield-lock-fill role-icon"></i>
+                                            <div class="role-title">Администратор</div>
+                                            <div class="role-desc">Полный доступ</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn auth-btn w-100"><i
+                                        class="bi bi-person-plus me-2"></i>Зарегистрироваться</button>
+                            </form>
+                            <p class="text-center mt-3">Уже есть аккаунт? <a href="/login">Вход</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const role = document.querySelector('input[name="role"]:checked').value;
+
+                const response = await fetch('http://127.0.0.1:5000/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Регистрация успешна! Переход на вход.');
+                    window.location.href = '/login';
+                } else {
+                    alert(data.error);
+                }
+            });
+        </script>
+</body>
+
+</html>

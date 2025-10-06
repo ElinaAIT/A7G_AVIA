@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — Avia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: url("/static/images/background.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* Центрирование и стиль карточки авторизации */
+        .auth-container {
+            min-height: calc(100vh - 56px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .auth-card .card {
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            color: #222;
+        }
+
+        .auth-card h2 {
+            margin-bottom: 8px;
+        }
+
+        /* Кнопка авторизации с иконкой */
+        .auth-btn {
+            background: linear-gradient(180deg, #1e7be3, #0b5ed7);
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(11, 94, 215, 0.28);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-btn i {
+            font-size: 1.1rem;
+        }
+
+        .auth-btn:active,
+        .auth-btn:focus {
+            box-shadow: 0 4px 12px rgba(11, 94, 215, 0.32);
+            outline: none;
+        }
+
+        @media (max-width: 576px) {
+            .auth-card {
+                padding: 0 12px;
+            }
+        }
+
+        /* App-style bottom alert */
+        .app-alert {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 24px;
+            z-index: 12000;
+            background: #fff;
+            color: #222;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            max-width: 680px;
+            width: calc(100% - 48px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .app-alert .app-alert-body {
+            padding: 18px;
+        }
+
+        .app-alert .app-alert-message {
+            margin-bottom: 8px;
+        }
+
+        .app-alert .app-alert-actions {
+            padding: 12px 18px;
+            background: transparent;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .app-alert .app-alert-ok {
+            background: #7a2d36;
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 14px;
+        }
+
+        .app-alert .app-alert-ok:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(122, 45, 54, 0.28);
+        }
+
+        /* danger variant */
+        .app-alert--danger {
+            border-color: rgba(122, 45, 54, 0.18);
+        }
+
+        .app-alert--danger .app-alert-message {
+            color: #7a2d36;
+            font-weight: 700;
+        }
+
+        .app-alert--danger .app-alert-ok {
+            background: #7a2d36;
+        }
+
+        /* inline login error styles */
+        #loginError {
+            color: #7a2d36;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .form-control.is-invalid {
+            border-color: #7a2d36;
+            box-shadow: 0 0 0 .15rem rgba(122, 45, 54, 0.12);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center auth-container">
+            <div class="col-md-6">
+                <div class="auth-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="text-center">Вход</h2>
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label>Логин</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Пароль</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                    <div id="loginError" class="text-danger small mt-2 d-none">Неверный логин или пароль
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn auth-btn w-100"><i
+                                        class="bi bi-box-arrow-in-right me-2"></i>Войти</button>
+                            </form>
+                            <p class="text-center mt-3">Нет аккаунта? <a href="/register">Регистрация</a></p>
+                            <!-- добавь register.html аналогично -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- App-style bottom alert -->
+        <div id="appAlert" class="app-alert d-none" role="dialog" aria-live="assertive">
+            <div class="app-alert-body">
+                <div class="app-alert-message" id="appAlertMessage">Сообщение</div>
+            </div>
+            <div class="app-alert-actions">
+                <button id="appAlertOk" class="app-alert-ok">OK</button>
+            </div>
+        </div>
+
+        <script>
+            function showAppAlert(message, type = 'default') {
+                const el = document.getElementById('appAlert');
+                document.getElementById('appAlertMessage').textContent = message;
+                el.classList.remove('d-none');
+                el.classList.toggle('app-alert--danger', type === 'danger');
+                // focus OK for accessibility
+                setTimeout(() => document.getElementById('appAlertOk').focus(), 50);
+            }
+            function hideAppAlert() {
+                const el = document.getElementById('appAlert');
+                el.classList.add('d-none');
+                el.classList.remove('app-alert--danger');
+            }
+            document.getElementById('appAlertOk').addEventListener('click', hideAppAlert);
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                const response = await fetch('http://127.0.0.1:5000/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('role', data.role);
+                    window.location.href = data.role === 'admin' ? '/admin' : data.role === 'manager' ? '/company' : '/dashboard';
+                } else {
+                    // показать ошибку под полем пароля
+                    const errEl = document.getElementById('loginError');
+                    // Специально обрабатываем статус 403 как "заблокирован"
+                    if (response.status === 403) {
+                        errEl.textContent = 'Вы заблокированы';
+                    } else {
+                        errEl.textContent = data.error || 'Неверный логин или пароль';
+                    }
+                    errEl.classList.remove('d-none');
+                    document.getElementById('password').classList.add('is-invalid');
+                }
+            });
+
+            // скрывать ошибку при вводе
+            document.getElementById('username').addEventListener('input', () => { document.getElementById('loginError').classList.add('d-none'); document.getElementById('password').classList.remove('is-invalid'); });
+            document.getElementById('password').addEventListener('input', () => { document.getElementById('loginError').classList.add('d-none'); document.getElementById('password').classList.remove('is-invalid'); });
+        </script>
+</body>
+
+</html>
