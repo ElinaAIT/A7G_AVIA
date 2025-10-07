@@ -16,17 +16,20 @@
             font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
             background: url('/static/images/background.jpg') no-repeat center center fixed;
             background-size: cover;
-            color: #222
+            color: #2C3E50;
         }
 
         .navbar-custom {
-            background: transparent !important;
-            box-shadow: none
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+            padding: 0.4rem 0;
         }
 
         .navbar-brand {
+            font-weight: 700;
             color: #fff !important;
-            font-weight: 700
         }
 
         .nav-right {
@@ -42,70 +45,78 @@
             gap: 8px;
             padding: 8px 12px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.06);
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: transform .14s
-        }
-
-        .auth-btn-sm:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.18)
+            border: none
         }
 
         .content-card {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            /* frosted semi-transparent content surface */
+            background: rgba(255, 255, 255, 0.72);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border-radius: 14px;
-            padding: 28px;
-            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.16);
-            margin: 0 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06)
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            margin: 0;
+            border: 1px solid rgba(255, 255, 255, 0.12)
         }
 
         h1,
         h2 {
-            color: #0b5ed7
+            color: #2C3E50;
+            font-weight: 600;
+            margin-bottom: 0.8rem
         }
 
         .card {
-            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
             border: none
         }
 
-        .content-card .form-control {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 10px;
-            height: 46px
+        .form-control {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #eef0f2;
+            border-radius: 8px;
+            height: 38px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.95rem
         }
 
-        .content-card .table thead th {
-            background: linear-gradient(90deg, #1673e6, #0b5ed7);
-            color: #fff
+        .form-control:focus {
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.06)
+        }
+
+        .table {
+            margin: 0
+        }
+
+        .table thead th {
+            background: #f8fafb;
+            color: #2C3E50;
+            font-weight: 600;
+            border: none;
+            padding: 0.5rem 0.6rem;
+            font-size: 0.9rem
+        }
+
+        .table tbody td {
+            padding: 0.45rem 0.6rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4
+        }
+
+        .btn {
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-weight: 500
         }
 
         .btn-primary {
             background: linear-gradient(90deg, #1673e6, #0b5ed7);
-            border: none;
-            border-radius: 10px;
-            padding: 8px 14px
-        }
-
-        .btn-secondary {
-            border-radius: 8px
-        }
-
-        .btn-success {
-            background: linear-gradient(90deg, #2db14d, #21903a);
-            border: none;
-            border-radius: 8px
-        }
-
-        .btn-danger {
-            background: linear-gradient(90deg, #e55353, #c82333);
-            border: none;
-            border-radius: 8px
+            border: none
         }
 
         .toast-container {
@@ -124,20 +135,20 @@
 
         /* Charts and stats styling */
         .chart-card {
-            border-radius: 12px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.92));
-            box-shadow: 0 8px 30px rgba(11, 94, 215, 0.08);
-            height: 100%;
-            padding: 12px;
-            border: 1px solid rgba(11, 94, 215, 0.06);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 0.6rem;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+            height: 100%
         }
 
         #statsSummary {
             border-radius: 10px;
-            background: linear-gradient(90deg, rgba(11, 94, 215, 0.06), rgba(11, 94, 215, 0.03));
-            color: #0b5ed7;
-            padding: 16px;
-            min-height: 220px;
+            background: rgba(255, 255, 255, 0.86);
+            padding: 0.9rem;
+            min-height: 140px
         }
 
         .stat-value {
@@ -353,8 +364,8 @@
 
                 document.getElementById('flightsTable').innerHTML = `
                 <table class="table table-striped">
-                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена</th><th>Места</th></tr></thead>
-                    <tbody>${flights.map(f => `<tr><td>${f.id}</td><td>${f.origin}</td><td>${f.destination}</td><td>${f.date}</td><td>${f.price}</td><td>${f.seats}</td></tr>`).join('') || '<tr><td colspan="6">Рейсов нет</td></tr>'}</tbody>
+                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (сом)</th><th>Места</th></tr></thead>
+                    <tbody>${flights.map(f => `<tr><td>${f.id}</td><td>${f.origin}</td><td>${f.destination}</td><td>${f.date}</td><td>${Math.round((parseFloat(f.price) || 0) * 95)}</td><td>${f.seats}</td></tr>`).join('') || '<tr><td colspan="6">Рейсов нет</td></tr>'}</tbody>
                 </table>
             `;
             }
@@ -365,7 +376,8 @@
 
             // helpers
             const fmtNumber = (n) => new Intl.NumberFormat('ru-RU').format(n || 0);
-            const fmtCurrency = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n || 0).replace('€', '€');
+            // Display revenue as Kyrgyz som (absolute value)
+            const fmtCurrency = (n) => new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Math.abs(n || 0)) + ' сом';
 
             function createOrUpdateCharts(stats) {
                 const other = Math.max(0, stats.total_flights - (stats.upcoming || 0) - (stats.completed || 0));
@@ -399,7 +411,7 @@
                 }
 
                 // Metrics bar (Passengers vs Revenue)
-                const metricsData = [stats.total_passengers || 0, stats.total_revenue || 0];
+                const metricsData = [stats.total_passengers || 0, Math.abs(stats.total_revenue || 0)];
                 if (!chartMetrics) {
                     const ctx2 = document.getElementById('chartMetrics').getContext('2d');
                     chartMetrics = new Chart(ctx2, {

@@ -141,15 +141,23 @@ def cancel_ticket(ticket_id):
     flight = Flight.query.get(ticket.flight_id)
     if not flight:
         return jsonify({"error": "Рейс не найден"}), 404
+    # Разрешаем удалять билет только если до вылета более 24 часов.
+    # В противном случае отмена запрещена.
+    # Поддерживаем оба формата даты: "YYYY-MM-DD" и ISO с временем.
+    try:
+        flight_date = datetime.strptime(flight.date, "%Y-%m-%d")
+    except Exception:
+        try:
+            flight_date = datetime.fromisoformat(flight.date)
+        except Exception:
+            return jsonify({"error": "Неверный формат даты рейса"}), 500
 
-    # Проверяем время до рейса (ТЗ: >24ч = refund, <24ч = cancel)
-    flight_date = datetime.strptime(flight.date, "%Y-%m-%d")  # парсим дату рейса
-    now = datetime.now()  # текущая дата/время
+    now = datetime.now()
     if (flight_date - now) > timedelta(hours=24):
-        ticket.status = "refunded"  # возврат
-        flight.seats += 1  # место освобождается
+        # Удаляем запись билета и возвращаем место
+        db.session.delete(ticket)
+        flight.seats += 1
+        db.session.commit()
+        return jsonify({"message": "Билет успешно отменён и удалён"}), 200
     else:
-        ticket.status = "canceled"  # без возврата
-
-    db.session.commit()
-    return jsonify({"message": f"Билет отменён (статус: {ticket.status})"}), 200
+        return jsonify({"error": "Билет можно отменить только не позднее чем за 24 часа до вылета"}), 400

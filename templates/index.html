@@ -69,6 +69,8 @@
 
         .search-bar-wide .form-control {
             font-size: 1.2rem;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.85);
             padding: 16px 18px;
             border-radius: 14px;
             /* полупрозрачная рамка и фон, чтобы сохранить читаемость */
@@ -77,6 +79,11 @@
             min-width: 160px;
             outline: none;
             transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .search-bar-wide .form-control::placeholder {
+            color: rgba(0, 0, 0, 0.45);
+            font-weight: 600;
         }
 
         .search-bar-wide .form-control:focus {
@@ -111,6 +118,79 @@
             cursor: pointer;
             margin-left: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Passenger dropdown and controls styling */
+        .passenger-dropdown {
+            display: none;
+            /* kept inline as well for JS toggle compatibility */
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 320px;
+            z-index: 10;
+            background: #ffffff;
+            /* solid white */
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            padding: 18px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            color: #0b0b0b;
+            transition: transform .18s ease, opacity .18s ease;
+            opacity: 1;
+        }
+
+        .passenger-dropdown .section-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .passenger-dropdown .muted {
+            font-size: 0.9em;
+            color: rgba(0, 0, 0, 0.75);
+            font-weight: 600;
+        }
+
+        .passenger-summary {
+            font-weight: 700;
+        }
+
+        .passenger-summary .muted {
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .btn-passenger-action {
+            background: #ffffff !important;
+            color: #111 !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            border-radius: 8px !important;
+            width: 36px !important;
+            height: 36px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        .apply-btn {
+            width: 100%;
+            background: linear-gradient(180deg, #0b5ed7, #0047b3);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            padding: 10px 12px;
+            box-shadow: 0 8px 20px rgba(11, 94, 215, 0.18);
+            transition: transform .08s ease;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
         }
 
         @media (max-width: 900px) {
@@ -208,14 +288,14 @@
     <div class="container mt-4">
         <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active"
-                    aria-current="true" aria-label="Слайд 1"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0"
+                    aria-label="Слайд 1"></button>
                 <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1"
                     aria-label="Слайд 2"></button>
                 <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="2"
                     aria-label="Слайд 3"></button>
-                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="3"
-                    aria-label="Слайд 4"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="3" class="active"
+                    aria-current="true" aria-label="Слайд 4"></button>
                 <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="4"
                     aria-label="Слайд 5"></button>
                 <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="5"
@@ -224,7 +304,7 @@
                     aria-label="Слайд 7"></button>
             </div>
             <div class="carousel-inner">
-                <div class="carousel-item active">
+                <div class="carousel-item">
                     <img src="/static/images/paris.jpg" alt="Париж">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Париж: Эйфелева башня зовёт!</h5>
@@ -245,7 +325,7 @@
                         <p>Отдых на бирюзовом океане с Avia</p>
                     </div>
                 </div>
-                <div class="carousel-item">
+                <div class="carousel-item active">
                     <img src="/static/images/issykkul.jpg" alt="Иссык-Куль">
                     <div class="carousel-caption d-none d-md-block">
                         <h5>Иссык-Куль:сокровище Кыргызстана</h5>
@@ -296,45 +376,34 @@
                 <input type="text" class="form-control" id="dateFrom" placeholder="Туда" readonly>
                 <input type="text" class="form-control" id="dateTo" placeholder="Обратно" readonly>
                 <div style="position:relative;min-width:200px;">
-                    <button type="button" id="passengerBtn" class="form-control"
+                    <button type="button" id="passengerBtn" class="form-control passenger-summary"
                         style="text-align:left;display:flex;justify-content:space-between;align-items:center;">
-                        <span id="passengerSummary">1 пассажир<br><span
-                                style="font-size:0.9em;color:#bfc7d1;">Эконом</span></span>
+                        <span id="passengerSummary">1 пассажир<br><span class="muted">Эконом</span></span>
                         <span style="font-size:1.2em;">&#9662;</span>
                     </button>
-                    <div id="passengerDropdown"
-                        style="display:none;position:absolute;top:110%;left:0;width:320px;z-index:10;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.10);padding:18px;">
+                    <div id="passengerDropdown" class="passenger-dropdown" style="display:none;">
                         <div style="font-weight:600;margin-bottom:10px;">Количество пассажиров</div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                             <div>
-                                Взрослые<br><span style="font-size:0.9em;color:#bfc7d1;">12 лет и старше</span>
+                                Взрослые<br><span class="muted">12 лет и старше</span>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-light btn-sm" id="adultMinus">-</button>
+                                <button type="button" class="btn btn-sm btn-passenger-action" id="adultMinus">-</button>
                                 <span id="adultCount" style="margin:0 10px;">1</span>
-                                <button type="button" class="btn btn-light btn-sm" id="adultPlus">+</button>
+                                <button type="button" class="btn btn-sm btn-passenger-action" id="adultPlus">+</button>
                             </div>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                             <div>
-                                Дети<br><span style="font-size:0.9em;color:#bfc7d1;">от 2 до 11 лет</span>
+                                Дети<br><span class="muted">от 2 до 11 лет</span>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-light btn-sm" id="childMinus">-</button>
+                                <button type="button" class="btn btn-sm btn-passenger-action" id="childMinus">-</button>
                                 <span id="childCount" style="margin:0 10px;">0</span>
-                                <button type="button" class="btn btn-light btn-sm" id="childPlus">+</button>
+                                <button type="button" class="btn btn-sm btn-passenger-action" id="childPlus">+</button>
                             </div>
                         </div>
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                            <div>
-                                Младенцы<br><span style="font-size:0.9em;color:#bfc7d1;">Младше 2 лет, без места</span>
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-light btn-sm" id="infantMinus">-</button>
-                                <span id="infantCount" style="margin:0 10px;">0</span>
-                                <button type="button" class="btn btn-light btn-sm" id="infantPlus">+</button>
-                            </div>
-                        </div>
+                        <!-- Младенцы removed as requested -->
                         <div style="font-weight:600;margin-bottom:10px;">Класс обслуживания</div>
                         <div>
                             <label style="display:block;"><input type="radio" name="class" value="Эконом" checked>
@@ -347,8 +416,7 @@
                             <label style="display:block;"><input type="radio" name="class" value="Первый класс"> Первый
                                 класс</label>
                         </div>
-                        <button type="button" id="passengerDropdownClose"
-                            style="width:100%;background:#0057d9;color:#fff;border:none;border-radius:12px;font-size:1.15rem;font-weight:600;padding:14px;margin-top:12px;">
+                        <button type="button" id="passengerDropdownClose" class="apply-btn" style="margin-top:12px;">
                             Применить
                         </button>
                     </div>
@@ -412,15 +480,14 @@
             passengerDropdown.style.display = "none";
         };
 
-        // Логика для счётчиков пассажиров и сводки
+        // Логика для счётчиков пассажиров и сводки (без младенцев)
         let adultCount = 1;
         let childCount = 0;
-        let infantCount = 0;
         let selectedClass = "Эконом";
 
         function updatePassengerSummary() {
-            const total = adultCount + childCount + infantCount;
-            document.getElementById('passengerSummary').innerHTML = `${total} пассажир${total === 1 ? '' : 'а'}<br><span style="font-size:0.9em;color:#bfc7d1;">${selectedClass}</span>`;
+            const total = adultCount + childCount; // infants removed
+            document.getElementById('passengerSummary').innerHTML = `${total} пассажир${total === 1 ? '' : 'а'}<br><span class="muted">${selectedClass}</span>`;
         }
 
         document.getElementById('adultPlus').onclick = function () {
@@ -443,16 +510,6 @@
                 updatePassengerSummary();
             }
         };
-        document.getElementById('infantPlus').onclick = function () {
-            infantCount++;
-            updatePassengerSummary();
-        };
-        document.getElementById('infantMinus').onclick = function () {
-            if (infantCount > 0) {
-                infantCount--;
-                updatePassengerSummary();
-            }
-        };
         const classRadios = document.getElementsByName('class');
         for (const radio of classRadios) {
             radio.onclick = function () {
@@ -467,10 +524,10 @@
             const destination = document.getElementById('destination').value;
             const dateFrom = window.dateFromValue || '';
             const dateTo = window.dateToValue || '';
-            const passengers = adultCount + childCount + infantCount;
+            const passengers = adultCount + childCount; // infants removed
             const adults = adultCount;
             const children = childCount;
-            const infants = infantCount;
+            const infants = 0; // keep API compatibility, infants always 0
             const travelClass = selectedClass;
 
             // perform public search in-place and render results under the search bar
@@ -500,14 +557,14 @@
                 // render table of flights
                 resultsEl.innerHTML = `
                     <table class="table table-striped">
-                        <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (€)</th><th>Места</th></tr></thead>
+                        <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (сом)</th><th>Места</th></tr></thead>
                         <tbody>${flights.map(f => `
                             <tr>
                                 <td>${f.id}</td>
                                 <td>${f.origin}</td>
                                 <td>${f.destination}</td>
                                 <td>${f.date}</td>
-                                <td>${f.price}</td>
+                                <td>${Math.round((parseFloat(f.price) || 0) * 95)}</td>
                                 <td>${f.seats}</td>
                             </tr>
                         `).join('')}</tbody>

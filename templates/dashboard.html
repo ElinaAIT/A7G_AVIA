@@ -59,15 +59,15 @@
 
         /* main content card */
         .content-card {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 18px;
             padding: 28px;
-            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
-            color: #111;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+            color: #0b0b0b;
             margin: 0 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06)
+            border: 1px solid rgba(255, 255, 255, 0.08)
         }
 
         .content-card h1 {
@@ -84,12 +84,14 @@
 
         /* inputs */
         .content-card .form-control {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.18);
             height: 46px;
             font-size: 1.02rem;
-            border-radius: 10px;
-            border: 1px solid rgba(16, 24, 40, 0.06);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6)
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 6px 20px rgba(11, 94, 215, 0.06) inset;
+            color: #0b0b0b;
+            font-weight: 600;
         }
 
         .content-card .form-control:focus {
@@ -103,7 +105,9 @@
         }
 
         .content-card .table thead th {
-            background: transparent
+            background: rgba(255, 255, 255, 0.06);
+            color: #0b0b0b;
+            font-weight: 700;
         }
 
         .content-card .table td,
@@ -181,7 +185,7 @@
 
         /* Empty result card styling */
         .empty-result-card {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 14px;
             padding: 34px 28px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
@@ -208,10 +212,16 @@
             border-radius: 12px;
             padding: 0;
             overflow: hidden;
+            /* more transparent backdrop */
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #0b0b0b;
         }
 
         .purchase .modal-header {
-            background: linear-gradient(90deg, #1673e6, #0b5ed7);
+            background: linear-gradient(90deg, rgba(13, 110, 253, 0.9), rgba(0, 77, 179, 0.9));
             color: #fff;
             border-bottom: none;
             padding: 18px 20px;
@@ -220,7 +230,26 @@
 
         .purchase .modal-body {
             padding: 20px;
-            background: #fff
+            /* make inner body more transparent to show modal backdrop */
+            background: rgba(255, 255, 255, 0.04);
+            color: #0b0b0b;
+            font-weight: 500;
+        }
+
+        .purchase .modal-footer {
+            background: transparent;
+            padding: 18px 20px;
+        }
+
+        /* Stronger labels / text for readability */
+        .purchase .form-label {
+            font-weight: 700;
+            color: #111;
+        }
+
+        .purchase .modal-body .text-muted {
+            font-weight: 600;
+            color: #495057;
         }
 
         .purchase .price {
@@ -249,18 +278,10 @@
 </head>
 
 <body>
-    <!-- Debug overlay (temporary) -->
-    <div id="debugBox"
-        style="position:fixed;left:18px;bottom:18px;z-index:12000;background:rgba(0,0,0,0.7);color:#fff;padding:10px 12px;border-radius:10px;max-width:320px;font-size:13px;display:none;box-shadow:0 8px 30px rgba(0,0,0,0.4)">
-        <div id="debugTitle" style="font-weight:700;margin-bottom:6px">Debug</div>
-        <div id="debugContent"></div>
-        <div style="margin-top:8px;text-align:right"><button id="debugClose"
-                style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:4px 8px;border-radius:6px;cursor:pointer">Закрыть</button>
-        </div>
-    </div>
+    <!-- Debug overlay (removed) -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container">
-            <a class="navbar-brand" href="/">Avia</a>
+            <a class="navbar-brand" href="/"><i class="fas fa-plane me-2"></i>Avia</a>
             <div class="nav-right">
                 <span id="userInfo" class="text-white">Пользователь</span>
                 <button class="btn btn-outline-danger ms-2 auth-btn-sm" onclick="logout()"><i
@@ -284,13 +305,8 @@
                 <div class="col-md-2">
                     <input type="text" class="form-control flatpickr-input" id="date" placeholder="дд.мм.гггг" readonly>
                 </div>
-                <div class="col-md-2">
-                    <select id="currency" class="form-select" title="Валюта">
-                        <option value="EUR">EUR (€)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="KGS">KGS (сом)</option>
-                    </select>
-                </div>
+                <!-- Currency is fixed to KGS (сом) for UI and payments -->
+                <input type="hidden" id="currency" value="KGS">
                 <div class="col-md-2 d-flex align-items-end">
                     <button id="searchBtn" type="submit" class="btn btn-primary">Найти билеты</button>
                 </div>
@@ -314,13 +330,18 @@
             if (!c) {
                 c = document.createElement('div');
                 c.id = 'toastContainer';
+                // center the toasts in the middle of the viewport
                 c.style.position = 'fixed';
-                c.style.top = '18px';
-                c.style.right = '18px';
+                c.style.top = '50%';
+                c.style.left = '50%';
+                c.style.transform = 'translate(-50%, -50%)';
                 c.style.zIndex = 11000;
                 c.style.display = 'flex';
                 c.style.flexDirection = 'column';
+                c.style.alignItems = 'center';
                 c.style.gap = '10px';
+                // ensure pointer events pass through except the toasts themselves
+                c.style.pointerEvents = 'none';
                 document.body.appendChild(c);
             }
             return c;
@@ -397,11 +418,7 @@
             searchBtn.disabled = true;
             searchBtn.innerHTML = 'Идёт поиск...';
 
-            // debug overlay: show request info
-            try {
-                document.getElementById('debugBox').style.display = 'block';
-                document.getElementById('debugContent').textContent = `Запрос: ${url}`;
-            } catch (e) { console.warn('debug overlay error', e); }
+            // debug overlay removed in production UI
 
             const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
             console.log('Ответ сервера:', response.status, response.statusText);
@@ -432,16 +449,16 @@
 
             document.getElementById('flightsTable').innerHTML = `
                 <table class="table table-striped">
-                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (€)</th><th>Места</th><th>Действия</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Откуда</th><th>Куда</th><th>Дата</th><th>Цена (сом)</th><th>Места</th><th>Действия</th></tr></thead>
                     <tbody>${flights.map(f => `
                         <tr>
                             <td>${f.id}</td>
                             <td>${f.origin}</td>
                             <td>${f.destination}</td>
                             <td>${f.date}</td>
-                            <td>${f.price}</td>
+                            <td>${Math.round((parseFloat(f.price) || 0) * 95)}</td>
                             <td>${f.seats}</td>
-                            <td><button class="btn btn-success btn-sm" onclick="buyTicket(${f.id})">Купить</button></td>
+                            <td><button class="btn btn-success btn-sm buy-btn" data-flight-id="${f.id}">Купить</button></td>
                         </tr>
                     `).join('')}</tbody>
                 </table>
@@ -455,16 +472,71 @@
         async function loadTickets() {
             const response = await fetch('http://127.0.0.1:5000/user/tickets', { headers: { 'Authorization': `Bearer ${token}` } });
             if (!response.ok) {
-                const errorData = await response.json();
+                const errorData = await response.json().catch(() => ({}));
                 console.log('Ошибка билетов:', errorData);
+                // show empty state
+                document.getElementById('ticketsTable').innerHTML = '<div class="empty-result-card"><h3>Билетов нет</h3></div>';
                 return;
             }
-            const tickets = await response.json();
+            let tickets = await response.json();
+            if (!Array.isArray(tickets)) {
+                if (tickets && typeof tickets === 'object') tickets = [tickets];
+                else tickets = [];
+            }
+
+            // For each ticket, try to fetch its flight date so we can determine whether
+            // "24 hours passed" (flight occurred more than 24 hours ago).
+            const flightFetches = tickets.map(t => {
+                const fid = t.flight;
+                if (!fid && fid !== 0) return Promise.resolve(null);
+                return fetch(`http://127.0.0.1:5000/user/flights?flight_id=${encodeURIComponent(fid)}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    .then(r => r.ok ? r.json().catch(() => null) : null)
+                    .catch(() => null);
+            });
+            const flightsResp = await Promise.all(flightFetches);
+
+            // normalize flightsResp to single flight object per ticket
+            const ticketWithFlight = tickets.map((t, i) => {
+                let f = flightsResp[i];
+                if (Array.isArray(f) && f.length) f = f[0];
+                return { ...t, _flight: f };
+            });
+
+            const now = new Date();
+            const MS24 = 24 * 60 * 60 * 1000;
+
+            const past = []; // flights whose date is at least 24h in the past
+            const upcoming = []; // other tickets (including if we couldn't parse date)
+
+            ticketWithFlight.forEach(t => {
+                const fld = t._flight;
+                if (fld && fld.date) {
+                    let d;
+                    try { d = new Date(fld.date); } catch (e) { d = null; }
+                    if (d && (now - d) > MS24) {
+                        past.push(t);
+                        return;
+                    }
+                }
+                upcoming.push(t);
+            });
+
+            // keep only a single past ticket (most recent by id)
+            let displayPast = [];
+            if (past.length) {
+                const latest = past.reduce((a, b) => (a.id > b.id ? a : b));
+                displayPast = [latest];
+            }
+
+            // sort upcoming so newly purchased appear at the bottom (ascending by id)
+            upcoming.sort((a, b) => a.id - b.id);
+
+            const rows = [...displayPast, ...upcoming];
 
             document.getElementById('ticketsTable').innerHTML = `
                 <table class="table table-striped">
                     <thead><tr><th>ID</th><th>Рейс ID</th><th>Статус</th><th>Действия</th></tr></thead>
-                    <tbody>${tickets.map(t => `
+                    <tbody>${(rows.length ? rows : []).map(t => `
                         <tr>
                             <td>${t.id}</td>
                             <td>${t.flight}</td>
@@ -482,6 +554,20 @@
             openPurchaseModal(flightId);
         }
 
+        // Delegated handler for buy buttons to avoid inline onclick pitfalls
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest && e.target.closest('.buy-btn');
+            if (!btn) return;
+            const fid = btn.getAttribute('data-flight-id');
+            const n = fid ? parseInt(fid, 10) : null;
+            if (!n && n !== 0) {
+                console.error('Buy button clicked but flight-id missing:', fid);
+                showToast('error', 'Не удалось определить рейс для покупки.');
+                return;
+            }
+            openPurchaseModal(n);
+        });
+
         // Отмена
         async function cancelTicket(ticketId) {
             const response = await fetch(`http://127.0.0.1:5000/user/tickets/${ticketId}`, {
@@ -491,7 +577,10 @@
             const data = await response.json();
             console.log('Отмена:', data);
             showToast(response.ok ? 'success' : 'error', data.message || data.error || '');
-            loadTickets();  // обновить
+            if (response.ok) {
+                // reload only on success
+                loadTickets();
+            }
         }
 
         // Logout
@@ -510,8 +599,14 @@
             loadFlights(origin, destination, date);
         });
 
-        // debug close
-        document.getElementById('debugClose').addEventListener('click', () => { document.getElementById('debugBox').style.display = 'none'; });
+        // debug close (guarded) — the debugBox may have been removed from the template
+        const dbgCloseBtn = document.getElementById('debugClose');
+        if (dbgCloseBtn) {
+            dbgCloseBtn.addEventListener('click', () => {
+                const db = document.getElementById('debugBox');
+                if (db) db.style.display = 'none';
+            });
+        }
 
         // Загрузка при старте
         // Если были параметры поиска с главной страницы — читаем их и выполняем поиск
@@ -550,20 +645,22 @@
                 <div class="modal-body">
                     <div id="purchaseBody">
                         <p>Рейс <span id="pFlightInfo"></span></p>
-                        <p>Цена: <strong id="pPrice">0</strong> EUR</p>
+                        <p>Цена: <strong id="pPrice">0</strong></p>
                         <div class="row g-2 mb-2">
                             <div class="col-md-6">
                                 <label class="form-label">Количество мест</label>
                                 <input id="pQuantity" type="number" class="form-control" min="1" step="1" value="1">
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-12">
                                 <label class="form-label">Сумма к оплате (в выбранной валюте)</label>
                                 <input id="pAmount" type="number" class="form-control" min="0" step="0.01">
                                 <div id="pAmountError" class="text-danger small mt-2 d-none">Сумма недостаточна</div>
                             </div>
                         </div>
                         <div class="mb-2">
-                            <small class="text-muted">Цена за место: <span id="pPrice">0</span> EUR — Всего: <strong
+                            <small class="text-muted">Цена за место: <span id="pUnitPrice">0</span> — Всего: <strong
                                     id="pTotal">0</strong></small>
                         </div>
                         <div class="mb-2">
@@ -590,30 +687,43 @@
 
     <script>
         // currency conversion helper (static rates for demo)
-        const conversion = { EUR: 1, USD: 1.08, KGS: 95 }; // 1 EUR = 1.08 USD, 95 KGS (пример)
+        // We treat internal stored prices as EUR on the server, but UI always shows KGS.
+        const conversion = { EUR: 1, USD: 1.08, KGS: 95 }; // 1 EUR = 95 KGS (пример)
         let currentPurchaseFlight = null;
 
         function formatCurrency(value, cur) {
-            if (cur === 'EUR') return `${value.toFixed(2)} €`;
-            if (cur === 'USD') return `$${value.toFixed(2)}`;
-            if (cur === 'KGS') return `${Math.round(value)} сом`;
-            return value;
+            // UI always shows KGS
+            const kgs = Math.round(value * (conversion['KGS'] || 1));
+            return `${kgs} сом`;
         }
 
         async function openPurchaseModal(flightId) {
+            // guard: flightId must be provided
+            if (!flightId && flightId !== 0) {
+                console.error('openPurchaseModal called without flightId', flightId);
+                showToast('error', 'Не указан ID рейса. Попробуйте снова.');
+                return;
+            }
             // fetch flight details (or reuse existing list) — we'll request the single flight from server
-            const resp = await fetch(`http://127.0.0.1:5000/user/flights?flight_id=${flightId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            console.log('Запрос рейса с flight_id=', flightId);
+            const resp = await fetch(`http://127.0.0.1:5000/user/flights?flight_id=${encodeURIComponent(flightId)}`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (!resp.ok) { showToast('error', 'Не удалось загрузить рейс'); return; }
             const flights = await resp.json();
             const flight = flights[0] || flights;
             currentPurchaseFlight = flight;
 
-            const cur = document.getElementById('currency').value || 'EUR';
+            // UI fixed to KGS
+            const cur = 'KGS';
             const priceEUR = parseFloat(flight.price || 0);
-            const converted = priceEUR * (conversion[cur] || 1);
+            const converted = priceEUR * (conversion['KGS'] || 1);
 
             document.getElementById('pFlightInfo').textContent = `${flight.origin} → ${flight.destination} (${flight.date})`;
-            document.getElementById('pPrice').textContent = formatCurrency(priceEUR, 'EUR');
+            // show unit price in KGS
+            // show unit price in KGS (main bold and small unit price)
+            const formattedUnit = formatCurrency(priceEUR, 'KGS');
+            document.getElementById('pPrice').textContent = formattedUnit;
+            const upEl = document.getElementById('pUnitPrice');
+            if (upEl) upEl.textContent = formattedUnit;
             document.getElementById('pAmount').value = converted.toFixed(2);
             document.getElementById('pTotal').textContent = formatCurrency(converted, cur);
             document.getElementById('pPaymentInstructions').textContent = `Вы оплачиваете ${formatCurrency(converted, cur)} при помощи выбранного способа.`;
@@ -625,7 +735,7 @@
             function updateTotals() {
                 let qty = parseInt(qtyEl.value || 1);
                 if (qty < 1) qty = 1;
-                // update total in selected currency
+                // update total in KGS
                 const total = converted * qty;
                 document.getElementById('pTotal').textContent = formatCurrency(total, cur);
                 // set pAmount as the total by default
@@ -663,12 +773,16 @@
             const modal = new bootstrap.Modal(document.getElementById('purchaseModal'));
             modal.show();
 
+            // Ensure pay button is enabled when modal opens
+            const payBtnInit = document.getElementById('pPayBtn');
+            if (payBtnInit) { payBtnInit.disabled = false; payBtnInit.textContent = 'Оплатить'; }
+
             document.getElementById('pPayBtn').onclick = async () => {
                 const qty = parseInt(document.getElementById('pQuantity').value || 1);
                 const entered = parseFloat(document.getElementById('pAmount').value || 0);
                 // convert entered back to EUR for comparison
-                const rate = conversion[cur] || 1;
-                const enteredEUR = entered / rate;
+                const uiRate = conversion['KGS'] || 1;
+                const enteredEUR = entered / uiRate;
                 const totalPriceEUR = priceEUR * qty;
                 if (enteredEUR + 1e-6 < totalPriceEUR) {
                     document.getElementById('pAmountError').classList.remove('d-none');
@@ -677,15 +791,28 @@
                 }
 
                 // simulate payment & create tickets (quantity-aware)
+                // Convert paid KGS back to EUR for API field paid_amount_eur
+                const paidAmountKGS = entered;
+                const paid_amount_eur = paidAmountKGS / (conversion['KGS'] || 1);
+                const payBtn = document.getElementById('pPayBtn');
+                if (payBtn) payBtn.disabled = true;
+                console.log('POST /user/tickets', { flight_id: flightId, paid_amount_eur, quantity: qty });
                 const response = await fetch('http://127.0.0.1:5000/user/tickets', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ flight_id: flightId, paid_amount_eur: totalPriceEUR, quantity: qty })
+                    body: JSON.stringify({ flight_id: flightId, paid_amount_eur: paid_amount_eur, quantity: qty })
                 });
                 const data = await response.json();
                 showToast(response.ok ? 'success' : 'error', data.message || data.error || '');
-                modal.hide();
-                loadTickets();
+                if (response.ok) {
+                    // allow commit, refresh tickets, then close modal
+                    await new Promise(r => setTimeout(r, 400));
+                    await loadTickets();
+                    if (payBtn) { payBtn.disabled = false; }
+                    modal.hide();
+                } else {
+                    if (payBtn) payBtn.disabled = false;
+                }
             };
         }
     </script>
